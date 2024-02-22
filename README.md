@@ -28,8 +28,6 @@ Prerequisites: Python must be installed on your machine. Our version: 3.10.11
 
 Instructions:
 
-Navigate to the app folder in the project, create a .env file with the content of the .env.example file and modify the information to match your machine.
-
 - Create a virtual environment: ```python -m venv env```
 - Activate the virtual environment:
     + Windows: ```env\Scripts\activate```
