@@ -59,7 +59,7 @@ const styleOptions = {
   height: "400px",
 };
 
-const chartInstance = (chart) => {
+const chartInstance = (chart: any) => {
   chart.value = chart;
 };
 

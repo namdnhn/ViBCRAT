@@ -199,9 +199,78 @@ def absoluteRiskAvgWithoutT2(data: CheckedData):
         results[T] = riskWork
     return results
 
+def absoluteAvgRiskVietnam(data: VietnamData):
+    One_AR_RR = np.ones((14, 5))
+    riskWork = 0
+    cum_lambda = 0
+    lambda1_temp = np.zeros((14, 5))
+    lambda2_temp = np.zeros((14, 5))
 
+    vietnam_lambda1 = [
+        0.15,
+        7.00,
+        22.1,
+        39.9,
+        62.4,
+        85.5,
+        106.4,
+        120.4,
+        129.9,
+        134.3,
+        135.7,
+        135.7,
+        133.7,
+        130.2,
+    ]
+
+    vietnam_lambda2 = [
+        5.38,
+        8.44,
+        10.9,
+        20.5,
+        40.1,
+        31.1,
+        112.1,
+        169.7,
+        234.5,
+        291.6,
+        348.8,
+        396.5,
+        437.2,
+        465.6,
+    ]
+
+
+    for i in range(14):
+        vietnam_lambda1[i] = vietnam_lambda1[i] / 100000
+        vietnam_lambda2[i] = vietnam_lambda2[i] / 100000
+        lambda1_temp[i, :5] = vietnam_lambda1[i]
+        lambda2_temp[i, :5] = vietnam_lambda2[i]
+
+    one_arrr = np.ravel(One_AR_RR)
+    lambda1 = np.ravel(lambda1_temp)
+    lambda2 = np.ravel(lambda2_temp)
+    
+    result = {}
+
+    for j in range(int(data.t1), 70):
+        lambdaj = lambda1[j] * one_arrr[j] + lambda2[j]
+
+        PI_j = (
+            (one_arrr[j] * lambda1[j] / lambdaj)
+            * np.exp(-cum_lambda)
+            * (1 - np.exp(-lambdaj))
+        )
+        riskWork += PI_j
+        cum_lambda += lambdaj
+        result[j + 20] = riskWork
+        print(
+            f"In the age {j + 20}, lambdaj = {lambdaj}, PI_j = {PI_j}, riskWork = {riskWork}, cumlambda = {cum_lambda}."
+        )
+    return result
+    
 def absoluteRiskVietnam(data: VietnamData):
-    rrstar = relative_risk(data)
+    rrstar = relative_risk_vietnam(data)
     One_AR_RR = np.zeros((14, 5))
     riskWork = 0
     cum_lambda = 0
@@ -286,8 +355,10 @@ def absoluteRiskVietnam(data: VietnamData):
     one_arrr = np.ravel(One_AR_RR)
     lambda1 = np.ravel(lambda1_temp)
     lambda2 = np.ravel(lambda2_temp)
+    
+    result = {}
 
-    for j in range(data.t1, data.t2):
+    for j in range(int(data.t1), 70):
         lambdaj = lambda1[j] * one_arrr[j] + lambda2[j]
 
         PI_j = (
@@ -297,9 +368,8 @@ def absoluteRiskVietnam(data: VietnamData):
         )
         riskWork += PI_j
         cum_lambda += lambdaj
+        result[j + 20] = riskWork
         print(
             f"In the age {j + 20}, lambdaj = {lambdaj}, PI_j = {PI_j}, riskWork = {riskWork}, cumlambda = {cum_lambda}."
         )
-    return riskWork
-        
-    
+    return result

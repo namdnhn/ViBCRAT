@@ -7,6 +7,14 @@
         Breast Cancer Risk Assessment Tool
       </h1>
     </div>
+    <div class="py-4">
+      <router-link to="/info" class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded m-4">
+        For American
+      </router-link>
+      <router-link to="/vietnam" class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded m-4">
+        For Vietnamese
+      </router-link>
+    </div>
     <router-view></router-view>
   </div>
 </template>

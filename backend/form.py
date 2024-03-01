@@ -38,14 +38,10 @@ class VietnamForm(BaseModel):
     t1: float
     breastDensity: float
     ageMen: int
-    menopause: int
     pregnancyNumber: int
     babyNumber: int
     hormoneTherapy: int
     
-    
-    
-
 
 class CheckedData:
     def __init__(self, form: Form):
@@ -99,7 +95,6 @@ class CheckedData:
                 self.rHyp = 1.00
             else:
                 self.rHyp = 0
-
 
 class CheckedData2:
     def __init__(self, form: Form2):
@@ -211,8 +206,6 @@ class VietnamData:
         self.t1 = form.t1 - 20
         self.breastDensity = 0
         self.ageMen = 0
-        # form.menopause: 0 = pre, 1 = post 
-        self.menopause = form.menopause
         self.pregnancy = 0
         self.babyNumber = 0
         self.hormoneTherapy = form.hormoneTherapy

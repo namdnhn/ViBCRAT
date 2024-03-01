@@ -63,7 +63,11 @@
       </p>
     </div>
 
-    <div id="nBiops2" class="w-8/12 mx-auto my-5" v-if="nBiops1 === '1'">
+    <div
+      id="nBiops2"
+      class="w-8/12 mx-auto my-5"
+      v-if="nBiops1.toString() === '1'"
+    >
       <p class="text-xl font-bold">
         How many breast biopsies with a benign diagnosis have you had?
       </p>
@@ -83,7 +87,7 @@
       </p>
     </div>
 
-    <div id="nBiops3" class="w-8/12 my-5" v-if="nBiops1 === '1'">
+    <div id="nBiops3" class="w-8/12 my-5" v-if="nBiops1.toString() === '1'">
       <p class="text-xl font-bold">
         Have you ever had a breast biopsy with atypical hyperplasia?
       </p>
@@ -163,7 +167,7 @@
             type="radio"
             v-model="ageFirst"
             value="24"
-            :disabled="age < 20"
+            :disabled="age !== null && age < 20"
           />
           <label class="mx-2">20 - 24</label>
         </div>
@@ -173,7 +177,7 @@
             type="radio"
             v-model="ageFirst"
             value="29"
-            :disabled="age < 25"
+            :disabled="age !== null && age < 25"
           />
           <label class="mx-2">25 - 29</label>
         </div>
@@ -183,7 +187,7 @@
             type="radio"
             v-model="ageFirst"
             value="30"
-            :disabled="age < 30"
+            :disabled="age !== null && age < 30"
           />
           <label class="mx-2">30 or older</label>
         </div>
@@ -272,23 +276,39 @@
               Breast biopsy with a benign diagnosis
             </td>
             <td class="border px-4 py-2">
-              {{ nBiops1 === "1" ? "Yes" : nBiops1 === "0" ? "No" : "Unknown" }}
+              {{
+                nBiops1.toString() === "1"
+                  ? "Yes"
+                  : nBiops1.toString() === "0"
+                  ? "No"
+                  : "Unknown"
+              }}
             </td>
           </tr>
-          <tr v-if="nBiops1 === '1'">
+          <tr v-if="nBiops1.toString() === '1'">
             <td class="border px-4 py-2">
               Number of breast biopsies with a benign diagnosis
             </td>
             <td class="border px-4 py-2">
               {{
-                nBiops1 === "1" ? (nBiops2 === "1" ? "1" : "2 or more") : "N/A"
+                nBiops1.toString() === "1"
+                  ? nBiops2.toString() === "1"
+                    ? "1"
+                    : "2 or more"
+                  : "N/A"
               }}
             </td>
           </tr>
-          <tr v-if="nBiops1 === '1'">
+          <tr v-if="nBiops1.toString() === '1'">
             <td class="border px-4 py-2">Atypical hyperplasia</td>
             <td class="border px-4 py-2">
-              {{ RHyp === "1" ? "Yes" : RHyp === "0" ? "No" : "Unknown" }}
+              {{
+                RHyp.toString() === "1"
+                  ? "Yes"
+                  : RHyp.toString() === "0"
+                  ? "No"
+                  : "Unknown"
+              }}
             </td>
           </tr>
           <tr>
@@ -297,9 +317,9 @@
             </td>
             <td class="border px-4 py-2">
               {{
-                ageMen === "10"
+                ageMen.toString() === "10"
                   ? "7 - 11"
-                  : ageMen === "12"
+                  : ageMen.toString() === "12"
                   ? "12 - 13"
                   : "14 and older"
               }}
@@ -311,11 +331,11 @@
             </td>
             <td class="border px-4 py-2">
               {{
-                nRels === "0"
+                nRels.toString() === "0"
                   ? "None"
-                  : nRels === "1"
+                  : nRels.toString() === "1"
                   ? "One"
-                  : nRels === "12"
+                  : nRels.toString() === "12"
                   ? "More than 1"
                   : "Unknown"
               }}
@@ -362,9 +382,9 @@ const raceOptions = ref([
   "Other Pacific Islander",
   "Other Asian",
 ]);
-var options = null;
-var styleOptions = null;
-var chartInstance = null;
+var options: any = null;
+var styleOptions: any = null;
+var chartInstance: any = null;
 const isClick = ref(false);
 
 interface Form {
@@ -381,16 +401,28 @@ interface Form {
 const checkAge = () => {
   return !(
     isClick.value &&
+    age.value !== null &&
+    age.value !== undefined &&
     (age.value <= 19 || age.value >= 91 || isNaN(age.value))
   );
 };
 
 const checkAgeMen = () => {
-  return !(isClick.value && ageMen.value < 0);
+  return !(
+    isClick.value &&
+    ageMen.value !== null &&
+    ageMen.value !== undefined &&
+    ageMen.value < 0
+  );
 };
 
 const checkRace = () => {
-  return !(isClick.value && race.value < 0);
+  return !(
+    isClick.value &&
+    race.value !== null &&
+    race.value !== undefined &&
+    race.value < 0
+  );
 };
 
 const checkNBiops1 = () => {
@@ -460,8 +492,8 @@ const calc = async () => {
     }
 
     const new_data: Form = {
-      t1: age.value,
-      t2: age.value + 5,
+      t1: age.value ?? 20,
+      t2: (age.value ?? 20) + 5,
       nBiops: nBiops,
       hypPlas: RHyp.value,
       ageMen: ageMen.value,
@@ -481,89 +513,91 @@ const calc = async () => {
       var dataPoints1 = [];
       var dataPoints2 = [];
 
-      for (const key in responseData.value["absolute risk"]) {
-        var temp = {
-          label: key,
-          y: responseData.value["absolute risk"][key],
+      if (responseData.value !== null) {
+        for (const key in responseData.value["absolute risk"] as Record<string, any>) {
+          var temp = {
+            label: key,
+            y: responseData.value["absolute risk"][key],
+          };
+          dataPoints1.push(temp);
+        }
+
+        for (const key in responseData.value["absolute average"] as Record<string, any>) {
+          var temp = {
+            label: key,
+            y: responseData.value["absolute average"][key],
+          };
+          dataPoints2.push(temp);
+        }
+
+        console.log(dataPoints1);
+        console.log(dataPoints2);
+
+        options = {
+          animationEnabled: true,
+          exportEnabled: true,
+          theme: "light2",
+          title: {
+            text: "Breast Cancer Risk",
+          },
+          axisX: {
+            title: "age",
+            valueFormatString: "YY",
+            labelTextAlign: "center",
+            labelAngle: 0,
+          },
+          axisY: {
+            title: "Breast Cancer Risk",
+            valueFormatString: "#%",
+          },
+          toolTip: {
+            shared: true,
+          },
+          legend: {
+            cursor: "pointer",
+            itemclick: function (e: any) {
+              if (
+                typeof e.dataSeries.visible === "undefined" ||
+                e.dataSeries.visible
+              ) {
+                e.dataSeries.visible = false;
+              } else {
+                e.dataSeries.visible = true;
+              }
+              e.chart.render();
+            },
+          },
+          data: [
+            {
+              type: "line",
+              name: "absolute risk",
+              showInLegend: true,
+              color: "#F7C705",
+              toolTipContent: "{name}: {y}",
+              yValueFormatString: "##.##%",
+              dataPoints: dataPoints1,
+            },
+            {
+              type: "line",
+              name: "absolute average",
+              showInLegend: true,
+              color: "#012066",
+              toolTipContent: "{name}: {y}",
+              yValueFormatString: "##.##%",
+              dataPoints: dataPoints2,
+            },
+          ],
         };
-        dataPoints1.push(temp);
-      }
 
-      for (const key in responseData.value["absolute average"]) {
-        var temp = {
-          label: key,
-          y: responseData.value["absolute average"][key],
+        styleOptions = {
+          width: "90%",
+          height: "500px",
         };
-        dataPoints2.push(temp);
+
+        chartInstance = (chart: any) => {
+          chart.value = chart;
+        };
       }
-
-      console.log(dataPoints1);
-      console.log(dataPoints2);
-
-      options = {
-        animationEnabled: true,
-        exportEnabled: true,
-        theme: "light2",
-        title: {
-          text: "Breast Cancer Risk",
-        },
-        axisX: {
-          title: "age",
-          valueFormatString: "YY",
-          labelTextAlign: "center",
-          labelAngle: 0,
-        },
-        axisY: {
-          title: "Breast Cancer Risk",
-          valueFormatString: "#%",
-        },
-        toolTip: {
-          shared: true,
-        },
-        legend: {
-          cursor: "pointer",
-          itemclick: function (e) {
-            if (
-              typeof e.dataSeries.visible === "undefined" ||
-              e.dataSeries.visible
-            ) {
-              e.dataSeries.visible = false;
-            } else {
-              e.dataSeries.visible = true;
-            }
-            e.chart.render();
-          },
-        },
-        data: [
-          {
-            type: "line",
-            name: "absolute risk",
-            showInLegend: true,
-            color: "#F7C705",
-            toolTipContent: "{name}: {y}",
-            yValueFormatString: "##.##%",
-            dataPoints: dataPoints1,
-          },
-          {
-            type: "line",
-            name: "absolute average",
-            showInLegend: true,
-            color: "#012066",
-            toolTipContent: "{name}: {y}",
-            yValueFormatString: "##.##%",
-            dataPoints: dataPoints2,
-          },
-        ],
-      };
-
-      styleOptions = {
-        width: "90%",
-        height: "500px",
-      };
-
-      chartInstance = (chart) => {
-        chart.value = chart;
-      };
       isSubmit.value = true;
     } catch (error) {
       console.log(error);
