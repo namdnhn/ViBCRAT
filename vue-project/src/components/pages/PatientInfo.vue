@@ -356,6 +356,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
+import { BASE_URL } from "../../axiosConstants"
 import axios from "axios";
 
 const isSubmit = ref(false);
@@ -503,7 +504,7 @@ const calc = async () => {
     };
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/form/",
+        `${BASE_URL}/form/`,
         new_data
       );
       console.log(response.status);

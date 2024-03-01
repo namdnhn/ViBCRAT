@@ -205,6 +205,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { BASE_URL } from "../../axiosConstants";
 
 const isSubmit = ref(false);
 const breastDensity = ref(null);
@@ -302,7 +303,7 @@ const calc = async () => {
       hormoneTherapy: hormoneTherapy.value,
     };
     try {
-      const response = await axios.post("http://127.0.0.1:8000/vn/", new_data);
+      const response = await axios.post(`${BASE_URL}/vn/`, new_data);
       console.log(response.status);
       responseData.value = response["data"];
       console.log(responseData.value);
